@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 # Library for PiMotor Shield V1.3
-# Developed by: SB Compoents
+# Developed by: SB Components
+# Author: Ankur
 # Project: RPi Motor Shield
 
 import RPi.GPIO as GPIO                        #Import GPIO library
 import time
+from time import sleep
 GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
 
 GPIO.setwarnings(False)
@@ -23,6 +25,10 @@ Motor4B = 15
     # IR sensor pins
 IRsensor1 = 7
 IRsensor2 = 12
+
+    # Ultrasonic Sensor
+TRIGGER = 29
+ECHO    = 31
 
     # Motor Enable PINS
 Motor1EN = 32
@@ -60,11 +66,13 @@ def init():
     GPIO.setup(ArrowForward,GPIO.OUT)
     GPIO.setup(ArrowBackward,GPIO.OUT)
 
-    # pins connected with Sensor Set as Input
+    # pins connected with Sensor Set as Input/Output
     GPIO.setup(IRsensor1,GPIO.IN)
     GPIO.setup(IRsensor2,GPIO.IN)
+    GPIO.setup(TRIGGER,GPIO.OUT)
+    GPIO.setup(ECHO,GPIO.IN)
 
-    # Initialize all the Pins to LOW ouptut connected with motor
+    # Initialize all the Pins to LOW ouptut connected with motor and ultrasonic
     GPIO.output(Motor1A, GPIO.LOW)
     GPIO.output(Motor1B, GPIO.LOW)
     GPIO.output(Motor2A, GPIO.LOW)
@@ -73,6 +81,8 @@ def init():
     GPIO.output(Motor3B, GPIO.LOW)
     GPIO.output(Motor4A, GPIO.LOW)
     GPIO.output(Motor4B, GPIO.LOW)
+
+    GPIO.output(TRIGGER, GPIO.LOW)
     
     # Initialize all the Pins to LOW ouptut connected with LED
     GPIO.output(ArrowLeft, GPIO.LOW)
@@ -83,8 +93,6 @@ def init():
 
 # LED arrow Indication
 def arrow( position, state ):
-    print state
-    print position
     if position == 'LEFT': 
         if state == 'ON':       # LEFT arrow LED ON
             GPIO.output(ArrowLeft, GPIO.HIGH)
@@ -125,15 +133,18 @@ def move(motor,mstate):
             GPIO.output(Motor1A, GPIO.LOW)
             GPIO.output(Motor1B, GPIO.HIGH)
             print "Motor1 Moving Forward"
+            
         if mstate == 'BACKWARD':
             GPIO.output(Motor1A, GPIO.HIGH)
             GPIO.output(Motor1B, GPIO.LOW)
             print "Motor1 Moving Backward"
+            
         if mstate == 'STOP':
             GPIO.output(Motor1EN, GPIO.LOW)
             GPIO.output(Motor1A, GPIO.LOW)
             GPIO.output(Motor1B, GPIO.LOW)
             print "Motor1 STOP"
+            
         return True
         
     if motor == 'MOTOR2':
@@ -142,15 +153,18 @@ def move(motor,mstate):
             GPIO.output(Motor2A, GPIO.LOW)
             GPIO.output(Motor2B, GPIO.HIGH)
             print "Motor2 Moving Forward"
+            
         if mstate == 'BACKWARD':
             GPIO.output(Motor2A, GPIO.HIGH)
             GPIO.output(Motor2B, GPIO.LOW)
             print "Motor2 Moving Backward"
+            
         if mstate == 'STOP':
             GPIO.output(Motor2EN, GPIO.LOW)
             GPIO.output(Motor2A, GPIO.LOW)
             GPIO.output(Motor2B, GPIO.LOW)
             print "Motor2 STOP"
+            
         return True
 
     if motor == 'MOTOR3':
@@ -159,15 +173,18 @@ def move(motor,mstate):
             GPIO.output(Motor3A, GPIO.LOW)
             GPIO.output(Motor3B, GPIO.HIGH)
             print "Motor3 Moving Forward"
+            
         if mstate == 'BACKWARD':
             GPIO.output(Motor3A, GPIO.HIGH)
             GPIO.output(Motor3B, GPIO.LOW)
             print "Motor3 Moving Backward"
+            
         if mstate == 'STOP':
             GPIO.output(Motor3EN, GPIO.LOW)
             GPIO.output(Motor3A, GPIO.LOW)
             GPIO.output(Motor3B, GPIO.LOW)
             print "Motor3 STOP"
+            
         return True
     
     if motor == 'MOTOR4':
@@ -176,48 +193,99 @@ def move(motor,mstate):
             GPIO.output(Motor4A, GPIO.LOW)
             GPIO.output(Motor4B, GPIO.HIGH)
             print "Motor4 Moving Forward"
+            
         if mstate == 'BACKWARD':
             GPIO.output(Motor4A, GPIO.HIGH)
             GPIO.output(Motor4B, GPIO.LOW)
             print "Motor4 Moving Backward"
+            
         if mstate == 'STOP':
             GPIO.output(Motor4EN, GPIO.LOW)
             GPIO.output(Motor4A, GPIO.LOW)
             GPIO.output(Motor4B, GPIO.LOW)
             print "Motor4 STOP"
+            
+        return True
+
+    if motor == 'ALL':
+        GPIO.output(Motor1EN, GPIO.HIGH)
+        GPIO.output(Motor2EN, GPIO.HIGH)
+        GPIO.output(Motor3EN, GPIO.HIGH)
+        GPIO.output(Motor4EN, GPIO.HIGH)
+        
+        if mstate == 'FORWARD':
+            GPIO.output(Motor1A, GPIO.LOW)
+            GPIO.output(Motor1B, GPIO.HIGH)
+            GPIO.output(Motor2A, GPIO.LOW)
+            GPIO.output(Motor2B, GPIO.HIGH)
+            GPIO.output(Motor3A, GPIO.LOW)
+            GPIO.output(Motor3B, GPIO.HIGH)
+            GPIO.output(Motor4A, GPIO.LOW)
+            GPIO.output(Motor4B, GPIO.HIGH)
+            print "All Motor Moving Forward"
+            
+        if mstate == 'BACKWARD':
+            GPIO.output(Motor1A, GPIO.HIGH)
+            GPIO.output(Motor1B, GPIO.LOW)
+            GPIO.output(Motor2A, GPIO.HIGH)
+            GPIO.output(Motor2B, GPIO.LOW)
+            GPIO.output(Motor3A, GPIO.HIGH)
+            GPIO.output(Motor3B, GPIO.LOW)
+            GPIO.output(Motor4A, GPIO.HIGH)
+            GPIO.output(Motor4B, GPIO.LOW)
+            print "All Motor Moving Backward"
+            
+        if mstate == 'STOP':
+            GPIO.output(Motor1EN, GPIO.LOW)
+            GPIO.output(Motor2EN, GPIO.LOW)
+            GPIO.output(Motor3EN, GPIO.LOW)
+            GPIO.output(Motor4EN, GPIO.LOW)
+            GPIO.output(Motor1A, GPIO.LOW)
+            GPIO.output(Motor1B, GPIO.LOW)
+            GPIO.output(Motor1A, GPIO.LOW)
+            GPIO.output(Motor1B, GPIO.LOW)
+            GPIO.output(Motor1A, GPIO.LOW)
+            GPIO.output(Motor1B, GPIO.LOW)
+            GPIO.output(Motor1A, GPIO.LOW)
+            GPIO.output(Motor1B, GPIO.LOW)
+            print "All STOP"
+            
         return True
 
     else:
         return False
 
-def allstop():
-    GPIO.output(Motor1EN, GPIO.LOW)
-    GPIO.output(Motor2EN, GPIO.LOW)
-    GPIO.output(Motor3EN, GPIO.LOW)
-    GPIO.output(Motor4EN, GPIO.LOW)
-    GPIO.output(Motor1A, GPIO.LOW)
-    GPIO.output(Motor1B, GPIO.LOW)
-    GPIO.output(Motor1A, GPIO.LOW)
-    GPIO.output(Motor1B, GPIO.LOW)
-    GPIO.output(Motor1A, GPIO.LOW)
-    GPIO.output(Motor1B, GPIO.LOW)
-    GPIO.output(Motor1A, GPIO.LOW)
-    GPIO.output(Motor1B, GPIO.LOW)
-    print "All Motor STOP"
 
 # Read IR sensor 1 Input
 def readIR1():
-    input_state1 = GPIO.input(IRsensor1)
+    input_state = GPIO.input(IRsensor1)
     if input_state == True:
         print "Sensor 1: Object Detected"
     return input_state
 
 # Read IR sensor 2 Input
 def readIR2():
-    input_state2 = GPIO.input(IRsensor2)
-    if input_state2 == True:
+    input_state = GPIO.input(IRsensor2)
+    if input_state == True:
         print "Sensor 2: Object Detected"
     return input_state
-    
-    
 
+# Ultrasonic Sensor read distance
+def distance():
+    time.sleep(0.333)
+    GPIO.output(TRIGGER, True)
+    time.sleep(0.00001)
+    GPIO.output(TRIGGER, False)
+    start = time.time()
+  
+    while GPIO.input(ECHO)==0:
+        start = time.time()
+
+    while GPIO.input(ECHO)==1:
+        stop = time.time()
+
+    elapsed = stop-start
+    measure = (elapsed * 34300)/2
+    print "Distance : %.1f" % measure
+    return measure
+    
