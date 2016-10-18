@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Library for PiMotor Shield V1.3
+# Library for PiMotor Shield V2
 # Developed by: SB Components
 # Author: Ankur
 # Project: RPi Motor Shield
@@ -12,280 +12,185 @@ GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
 
 GPIO.setwarnings(False)
 
-# GPIO of RPi Pins connected with Motor's, LED's and Sensor
-Motor1A = 24
-Motor1B = 26
-Motor2A = 21
-Motor2B = 23
-Motor3A = 16
-Motor3B = 18
-Motor4A = 13
-Motor4B = 15
-
-    # IR sensor pins
-IRsensor1 = 7
-IRsensor2 = 12
-
-    # Ultrasonic Sensor
-TRIGGER = 29
-ECHO    = 31
-
-    # Motor Enable PINS
-Motor1EN = 32
-Motor2EN = 19
-Motor3EN = 22
-Motor4EN = 11
-
-    # LED Enable PINS
-ArrowLeft = 33
-ArrowRight = 35
-ArrowForward = 36
-ArrowBackward = 37
-
-
-#Initialize the Motor Shield
-def init():     
-    # pins connected with motor driver IC Set as Output 
-    GPIO.setup(Motor1A,GPIO.OUT)
-    GPIO.setup(Motor1B,GPIO.OUT)
-    GPIO.setup(Motor2A,GPIO.OUT)
-    GPIO.setup(Motor2B,GPIO.OUT)
-    GPIO.setup(Motor3A,GPIO.OUT)
-    GPIO.setup(Motor3B,GPIO.OUT)
-    GPIO.setup(Motor4A,GPIO.OUT)
-    GPIO.setup(Motor4B,GPIO.OUT)
-
-    GPIO.setup(Motor1EN,GPIO.OUT)
-    GPIO.setup(Motor2EN,GPIO.OUT)
-    GPIO.setup(Motor3EN,GPIO.OUT)
-    GPIO.setup(Motor4EN,GPIO.OUT)
+class Motor:
+    ''' Class to handle interaction with the motor pins
+    Supports redefinition of "forward" and "backward" depending on how motors are connected
+    Use the supplied Motorshieldtest module to test the correct configuration for your project.
     
-    # pins connected with arrow LED Set as Output
-    GPIO.setup(ArrowLeft,GPIO.OUT)
-    GPIO.setup(ArrowRight,GPIO.OUT)
-    GPIO.setup(ArrowForward,GPIO.OUT)
-    GPIO.setup(ArrowBackward,GPIO.OUT)
-
-    # pins connected with Sensor Set as Input/Output
-    GPIO.setup(IRsensor1,GPIO.IN)
-    GPIO.setup(IRsensor2,GPIO.IN)
-    GPIO.setup(TRIGGER,GPIO.OUT)
-    GPIO.setup(ECHO,GPIO.IN)
-
-    # Initialize all the Pins to LOW ouptut connected with motor and ultrasonic
-    GPIO.output(Motor1A, GPIO.LOW)
-    GPIO.output(Motor1B, GPIO.LOW)
-    GPIO.output(Motor2A, GPIO.LOW)
-    GPIO.output(Motor2B, GPIO.LOW)
-    GPIO.output(Motor3A, GPIO.LOW)
-    GPIO.output(Motor3B, GPIO.LOW)
-    GPIO.output(Motor4A, GPIO.LOW)
-    GPIO.output(Motor4B, GPIO.LOW)
-
-    GPIO.output(TRIGGER, GPIO.LOW)
+    Arguments:
+    motor = string motor pin label (i.e. "MOTOR1","MOTOR2","MOTOR3","MOTOR4") identifying the pins to which
+            the motor is connected.
+    config = int defining which pins control "forward" and "backward" movement.
+    '''
+    motorpins = {"MOTOR1":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
+                 "MOTOR2":{"config":{1:{"e":19,"f":21,"r":23},2:{"e":32,"f":23,"r":21}}, "arrow":2},
+                 "MOTOR3":{"config":{1:{"e":22,"f":16,"r":18},2:{"e":32,"f":18,"r":16}}, "arrow":3},
+                 "MOTOR4":{"config":{1:{"e":11,"f":15,"r":13},2:{"e":32,"f":13,"r":15}},"arrow":4}}
     
-    # Initialize all the Pins to LOW ouptut connected with LED
-    GPIO.output(ArrowLeft, GPIO.LOW)
-    GPIO.output(ArrowRight, GPIO.LOW)
-    GPIO.output(ArrowForward, GPIO.LOW)
-    GPIO.output(ArrowBackward, GPIO.LOW)
-     
+    def __init__(self, motor, config):
+        self.testMode = False
+        self.arrow = Arrow(self.motorpins[motor]["arrow"])
+        self.pins = self.motorpins[motor]["config"][config]
+        GPIO.setup(self.pins['e'],GPIO.OUT)
+        GPIO.setup(self.pins['f'],GPIO.OUT)
+        GPIO.setup(self.pins['r'],GPIO.OUT)
+        GPIO.output(self.pins['e'],GPIO.HIGH)
+        GPIO.output(self.pins['f'],GPIO.LOW)
+        GPIO.output(self.pins['r'],GPIO.LOW)
 
-# LED arrow Indication
-def arrow( position, state ):
-    if position == 'LEFT': 
-        if state == 'ON':       # LEFT arrow LED ON
-            GPIO.output(ArrowLeft, GPIO.HIGH)
-        if state == 'OFF':                   # LEFT arrow LED OFF
-            GPIO.output(ArrowLeft, GPIO.LOW)
-        return True
-            
-    if position == 'RIGHT':
-        if state == 'ON':       # RIGHT arrow LED ON
-            GPIO.output(ArrowRight, GPIO.HIGH)
-        if state == 'OFF':                   # LEFT arrow LED OFF
-            GPIO.output(ArrowRight, GPIO.LOW)
-        return True
-            
-    if position == 'FORWARD':
-        if state == 'ON':       # FORWARD arrow LED ON
-            GPIO.output(ArrowForward, GPIO.HIGH)
-        if state == 'OFF':                   # FORWARD arrow LED OFF
-            GPIO.output(ArrowForward, GPIO.LOW)    
-        return True
-    
-    if position == 'BACKWARD':
-        if state == 'ON':       # BACKWARD arrow LED ON
-            GPIO.output(ArrowBackward, GPIO.HIGH)
-        if state == 'OFF':                   # BACKWARD arrow LED OFF
-            GPIO.output(ArrowBackward, GPIO.LOW)    
-        return True
-    
-    else:
-        return False
-
-    
-
-def move(motor,mstate):
-    if motor == 'MOTOR1':
-        GPIO.output(Motor1EN, GPIO.HIGH)
-        if mstate == 'FORWARD':
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.HIGH)
-            print "Motor1 Moving Forward"
-            
-        if mstate == 'BACKWARD':
-            GPIO.output(Motor1A, GPIO.HIGH)
-            GPIO.output(Motor1B, GPIO.LOW)
-            print "Motor1 Moving Backward"
-            
-        if mstate == 'STOP':
-            GPIO.output(Motor1EN, GPIO.LOW)
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.LOW)
-            print "Motor1 STOP"
-            
-        return True
+    def test(self, state):
+        ''' Puts the motor into test mode
+        When in test mode the Arrow associated with the motor receives power on "forward"
+        rather than the motor. Useful when testing your code. 
         
-    if motor == 'MOTOR2':
-        GPIO.output(Motor2EN, GPIO.HIGH)
-        if mstate == 'FORWARD':
-            GPIO.output(Motor2A, GPIO.LOW)
-            GPIO.output(Motor2B, GPIO.HIGH)
-            print "Motor2 Moving Forward"
-            
-        if mstate == 'BACKWARD':
-            GPIO.output(Motor2A, GPIO.HIGH)
-            GPIO.output(Motor2B, GPIO.LOW)
-            print "Motor2 Moving Backward"
-            
-        if mstate == 'STOP':
-            GPIO.output(Motor2EN, GPIO.LOW)
-            GPIO.output(Motor2A, GPIO.LOW)
-            GPIO.output(Motor2B, GPIO.LOW)
-            print "Motor2 STOP"
-            
-        return True
+        Arguments:
+        state = boolean
+        '''
+        self.testMode = state
 
-    if motor == 'MOTOR3':
-        GPIO.output(Motor3EN, GPIO.HIGH)
-        if mstate == 'FORWARD':
-            GPIO.output(Motor3A, GPIO.LOW)
-            GPIO.output(Motor3B, GPIO.HIGH)
-            print "Motor3 Moving Forward"
-            
-        if mstate == 'BACKWARD':
-            GPIO.output(Motor3A, GPIO.HIGH)
-            GPIO.output(Motor3B, GPIO.LOW)
-            print "Motor3 Moving Backward"
-            
-        if mstate == 'STOP':
-            GPIO.output(Motor3EN, GPIO.LOW)
-            GPIO.output(Motor3A, GPIO.LOW)
-            GPIO.output(Motor3B, GPIO.LOW)
-            print "Motor3 STOP"
-            
-        return True
+    def forward(self):
+        ''' Starts the motor turning in its configured "forward" direction.
+'''
+        print("Forward")
+        if self.testMode:
+            self.arrow.on()
+        else:
+            GPIO.output(self.pins['f'],GPIO.HIGH)
+            GPIO.output(self.pins['r'],GPIO.LOW)
+
+    def reverse(self):
+        ''' Starts the motor turning in its configured "reverse" direction.
+     '''
+        print("Reverse")
+        if self.testMode:
+            self.arrow.off()
+        else:
+            GPIO.output(self.pins['f'],GPIO.LOW)
+            GPIO.output(self.pins['r'],GPIO.HIGH)
+
+    def stop(self):
+        ''' Stops power to the motor,
+     '''
+        print("Stop")
+        self.arrow.off()
+        GPIO.output(self.pins['f'],GPIO.LOW)
+        GPIO.output(self.pins['r'],GPIO.LOW)
+
+class LinkedMotors:
+    ''' Links 2 or more motors together as a set.
     
-    if motor == 'MOTOR4':
-        GPIO.output(Motor4EN, GPIO.HIGH)
-        if mstate == 'FORWARD':
-            GPIO.output(Motor4A, GPIO.LOW)
-            GPIO.output(Motor4B, GPIO.HIGH)
-            print "Motor4 Moving Forward"
-            
-        if mstate == 'BACKWARD':
-            GPIO.output(Motor4A, GPIO.HIGH)
-            GPIO.output(Motor4B, GPIO.LOW)
-            print "Motor4 Moving Backward"
-            
-        if mstate == 'STOP':
-            GPIO.output(Motor4EN, GPIO.LOW)
-            GPIO.output(Motor4A, GPIO.LOW)
-            GPIO.output(Motor4B, GPIO.LOW)
-            print "Motor4 STOP"
-            
-        return True
-
-    if motor == 'ALL':
-        GPIO.output(Motor1EN, GPIO.HIGH)
-        GPIO.output(Motor2EN, GPIO.HIGH)
-        GPIO.output(Motor3EN, GPIO.HIGH)
-        GPIO.output(Motor4EN, GPIO.HIGH)
+        This allows a single command to be used to control a linked set of motors
+        e.g. For a 4x wheel vehicle this allows a single command to make all 4 wheels go forward.
+        Starts the motor turning in its configured "forward" direction.
         
-        if mstate == 'FORWARD':
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.HIGH)
-            GPIO.output(Motor2A, GPIO.LOW)
-            GPIO.output(Motor2B, GPIO.HIGH)
-            GPIO.output(Motor3A, GPIO.LOW)
-            GPIO.output(Motor3B, GPIO.HIGH)
-            GPIO.output(Motor4A, GPIO.LOW)
-            GPIO.output(Motor4B, GPIO.HIGH)
-            print "All Motor Moving Forward"
-            
-        if mstate == 'BACKWARD':
-            GPIO.output(Motor1A, GPIO.HIGH)
-            GPIO.output(Motor1B, GPIO.LOW)
-            GPIO.output(Motor2A, GPIO.HIGH)
-            GPIO.output(Motor2B, GPIO.LOW)
-            GPIO.output(Motor3A, GPIO.HIGH)
-            GPIO.output(Motor3B, GPIO.LOW)
-            GPIO.output(Motor4A, GPIO.HIGH)
-            GPIO.output(Motor4B, GPIO.LOW)
-            print "All Motor Moving Backward"
-            
-        if mstate == 'STOP':
-            GPIO.output(Motor1EN, GPIO.LOW)
-            GPIO.output(Motor2EN, GPIO.LOW)
-            GPIO.output(Motor3EN, GPIO.LOW)
-            GPIO.output(Motor4EN, GPIO.LOW)
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.LOW)
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.LOW)
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.LOW)
-            GPIO.output(Motor1A, GPIO.LOW)
-            GPIO.output(Motor1B, GPIO.LOW)
-            print "All STOP"
-            
-        return True
+        Arguments:
+        *motors = a list of Motor objects
+     '''
+    def __init__(self, *motors):
+        self.motor = []
+        for i in motors:
+            print(i.pins)
+            self.motor.append(i)
 
-    else:
-        return False
+    def forward(self):
+        ''' Starts the motor turning in its configured "forward" direction.
+     '''
+        for i in range(len(self.motor)):
+            self.motor[i].forward()
 
+    def reverse(self):
+        ''' Starts the motor turning in its configured "reverse" direction.
+     '''
+        for i in range(len(self.motor)):
+            self.motor[i].reverse()
 
-# Read IR sensor 1 Input
-def readIR1():
-    input_state = GPIO.input(IRsensor1)
-    if input_state == True:
-        print "Sensor 1: Object Detected"
-    return input_state
+    def stop(self):
+        ''' Stops power to the motor,
+     '''
+        for i in range(len(self.motor)):
+            self.motor[i].stop()
 
-# Read IR sensor 2 Input
-def readIR2():
-    input_state = GPIO.input(IRsensor2)
-    if input_state == True:
-        print "Sensor 2: Object Detected"
-    return input_state
+class Sensor:
+    ''' Defines a sensor connected to the sensor pins on the MotorShield
+    
+        Arguments:
+        sensortype = string identifying which sensor is being configured.
+            i.e. "IR1", "IR2", "ULTRASONIC"
+        boundary = an integer specifying the minimum distance at which the sensor
+            will return a Triggered response of True. 
+    '''
+    Triggered = False
+    def iRCheck():
+        input_state = GPIO.input(self.config["echo"])
+        if input_state == True:
+            print("Sensor 2: Object Detected")
+            self.Triggered = True
+        else:
+            self.Triggered = False
 
-# Ultrasonic Sensor read distance
-def distance():
-    time.sleep(0.333)
-    GPIO.output(TRIGGER, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIGGER, False)
-    start = time.time()
-  
-    while GPIO.input(ECHO)==0:
+    def sonicCheck(self):
+        print("SonicCheck has been triggered")
+        time.sleep(0.333)
+        GPIO.output(self.config["trigger"], True)
+        time.sleep(0.00001)
+        GPIO.output(self.config["trigger"], False)
         start = time.time()
+        while GPIO.input(self.config["echo"])==0:
+            start = time.time()
+        while GPIO.input(self.config["echo"])==1:
+            stop = time.time()
+        elapsed = stop-start
+        measure = (elapsed * 34300)/2
+        self.lastRead = measure
+        if self.boundary > measure:
+            print("Boundary breached")
+            print(self.boundary, measure)
+            self.Triggered = True
+        else:
+            self.Triggered = False
+        
+    sensorpins = {"IR1":{"echo":7, "check":iRCheck}, "IR2":{"echo":12, "check":iRCheck},
+                  "ULTRASONIC":{"trigger":29, "echo": 31, "check":sonicCheck}}
 
-    while GPIO.input(ECHO)==1:
-        stop = time.time()
+    def trigger(self):
+        ''' Executes the relevant routine that activates and takes a reading from the specified sensor.
+    
+        If the specified "boundary" has been breached the Sensor's Triggered attribute gets set to True.
+    ''' 
+        self.config["check"](self)
+        print("Trigger Called")
 
-    elapsed = stop-start
-    measure = (elapsed * 34300)/2
-    print "Distance : %.1f" % measure
-    return measure
+    def __init__(self, sensortype, boundary):
+        self.config = self.sensorpins[sensortype]
+        self.boundary = boundary
+        self.lastRead = 0
+        if "trigger" in self.config:
+            print("trigger")
+            GPIO.setup(self.config["trigger"],GPIO.OUT)
+        GPIO.setup(self.config["echo"],GPIO.IN) 
+
+class Arrow():
+    ''' Defines an object for controlling one of the LED arrows on the Motorshield.
+    
+        Arguments:
+        which = integer label for each arrow. The arrow number if arbitrary starting with:
+            1 = Arrow closest to the Motorshield's power pins and running clockwise round the board
+            ...
+            4 = Arrow closest to the motor pins.
+    '''
+    arrowpins={1:33,2:35,3:37,4:36}
+
+    def __init__(self, which):
+        self.pin = self.arrowpins[which]
+        GPIO.setup(self.pin,GPIO.OUT)
+        GPIO.output(self.pin, GPIO.LOW)
+
+    def on(self):
+        GPIO.output(self.pin,GPIO.HIGH)
+
+    def off(self):
+        GPIO.output(self.pin,GPIO.LOW)
+
+    
+
     
