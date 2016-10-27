@@ -1,93 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <meta charset="UTF-8">
+    <title>Motor-shield by sbcshop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <title>Motor-shield by sbcshop</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Motor-shield</h1>
-        <h2></h2>
-        <a href="https://github.com/sbcshop/motor-shield" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+    <section class="page-header">
+      <h1 class="project-name">Motor-shield</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/sbcshop/motor-shield" class="btn">View on GitHub</a>
+      <a href="https://github.com/sbcshop/motor-shield/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/sbcshop/motor-shield/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h2>
+    <section class="main-content">
+      <h2>
 <a id="python-library-for-sb-motor-shield" class="anchor" href="#python-library-for-sb-motor-shield" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Python Library for SB Motor-shield</h2>
 
-<p>SB Components' Motor-Shield python library v.1.</p>
+<p>SB Components' Motor-Shield python library v.2.</p>
 
 <h3>
 <a id="pi-motor-shield-library-reference" class="anchor" href="#pi-motor-shield-library-reference" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pi Motor-Shield Library Reference:</h3>
 
-<p><strong>init()</strong><br>
-This function initialises the motor shield and configures the GPIO as input/output for LED, sensor connectors and motor connectors.  </p>
+<h4>
+<a id="motor" class="anchor" href="#motor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motor</h4>
 
-<p><strong>arrow(position , state)</strong><br>
-This function enables or disables the arrow LEDs.<br>
-<strong>Arguments</strong><br>
-<em>position</em>: string – allowed values ‘FORWARD’, ‘BACKWARD’, ‘LEFT’ and ‘RIGHT’<br>
-<em>state</em>: string – allowed values ‘ON’ and ‘OFF’<br>
-<strong>example</strong>  </p>
+<p>Class describing a set of Motor terminals on the Motor-Shield.</p>
 
-<div class="highlight highlight-source-python"><pre>arrow(<span class="pl-s"><span class="pl-pds">'</span>FORWARD<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ON<span class="pl-pds">'</span></span>)</pre></div>
+<p><em><strong>Constructor Arguments</strong></em></p>
 
-<p><strong>move(motor, mstate)</strong><br>
-This function is used to select a motor/group and start or stop that motor/group. It also allows you to control the direction of the motor/group.<br>
-<strong>Arguments</strong><br>
-<em>motor</em>: string – allowed values ‘MOTOR1’, ‘MOTOR2’, ‘MOTOR3’ and ‘MOTOR4’<br>
-<em>mstate</em>: string – allowed values ‘FORWARD’, ‘BACKWARD’ and ‘STOP’<br>
-<strong>example</strong>  </p>
+<p><em>motor</em></p>
 
-<div class="highlight highlight-source-python"><pre>move(<span class="pl-s"><span class="pl-pds">'</span>MOTOR<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>BACKWARD<span class="pl-pds">'</span></span>) </pre></div>
+<p>The label of the relevant motor terminal (i.e. "MOTOR1", "MOTOR2", "MOTOR3", "MOTOR4")  </p>
 
-<p><strong>allstop()</strong><br>
-This function stop all the motors.
-<strong>example</strong></p>
+<p><em>config</em> </p>
 
-<div class="highlight highlight-source-python"><pre>allstop()</pre></div>
+<p>An integer (1 or 2) defining which pin should be considered "forward" and which "reverse"</p>
 
-<p><strong>readIR1()</strong> &amp; <strong>readIR2()</strong><br>
-These functions read the IR1 sensor and IR2 sensor inputs and return true if the sensors have been triggered otherwise the return false.  </p>
+<p><em><strong>Methods</strong></em></p>
 
-<p><strong>example</strong>  </p>
+<p><strong>test</strong>(state)</p>
 
-<div class="highlight highlight-source-python"><pre>Sensor_IR1 <span class="pl-k">=</span> readIR1()  
-Sensor_IR2 <span class="pl-k">=</span> readIR2()</pre></div>
-        </section>
+<p>Sets the Motor test mode on or off (takes a boolean argument). When <em><strong>on</strong></em> issuing a command to the motor terminal will illuminate the motor's related LED arrow rather than power the motor.</p>
 
-        <aside id="sidebar">
-          <a href="https://github.com/sbcshop/motor-shield/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/sbcshop/motor-shield/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+<p><strong>forward()</strong></p>
 
-          <p class="repo-owner"><a href="https://github.com/sbcshop/motor-shield"></a> is maintained by <a href="https://github.com/sbcshop">sbcshop</a>.</p>
+<p>Starts the motor turning in its configured "forward" direction.</p>
 
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
+<p><strong>reverse()</strong></p>
+
+<p>Starts the motor turning in its configured "reverse" direction.</p>
+
+<p><strong>stop</strong></p>
+
+<p>Stops power to the motor</p>
+
+<p><strong>Examples</strong></p>
+
+<pre><code>m1 = Motor("MOTOR1",1)
+m1.forward()
+</code></pre>
+
+<h4>
+<a id="linkedmotors" class="anchor" href="#linkedmotors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LinkedMotors</h4>
+
+<p>This class describes a set of Motor objects and is used to group related motors together.</p>
+
+<p><em><strong>Constructor Arguments</strong></em></p>
+
+<p><strong>*motors</strong></p>
+
+<p>List of Motor objects</p>
+
+<p><em><strong>Methods</strong></em></p>
+
+<p><strong>forward()</strong></p>
+
+<p>Starts the linked motors turning in their configured "forward" direction.</p>
+
+<p><strong>reverse()</strong></p>
+
+<p>Starts the linked motors turning in their configured "forward" direction.</p>
+
+<p><strong>stop()</strong></p>
+
+<p>Stops power to the linked motors</p>
+
+<p><strong>Example</strong></p>
+
+<pre><code>m1 = Motor("MOTOR1",1)
+m2 = Motor("MOTOR2",2)
+mtrs = LinkedMotors(m,m2)
+mtrs.forward()
+</code></pre>
+
+<h3>
+<a id="sensor" class="anchor" href="#sensor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sensor</h3>
+
+<p>This class describes the sensor connectors on the Motor-Shield</p>
+
+<p><em><strong>Constructor arguments</strong></em></p>
+
+<p><strong>sensortype</strong></p>
+
+<p>string identifying which sensor is being configured. i.e. "IR1", "IR2", "ULTRASONIC"</p>
+
+<p><strong>boundary</strong></p>
+
+<p>An integer specifying the minimum distance (in centimeters) at which the sensor will return a Triggered response of True. This is only meaningful for the ultrasonic sensor.</p>
+
+<p><em><strong>Methods</strong></em></p>
+
+<p><strong>trigger()</strong></p>
+
+<p>Executes the relevant routine that activates and takes a reading from the specified sensor. If the specified "boundary" has been breached the Sensor's Triggered attribute gets set to True.</p>
+
+<p><strong>Example</strong></p>
+
+<pre><code>us = Sensor("ULTRASONIC",10)
+us.trigger()
+if us.Triggered:
+    print("Boundary breached")
+
+</code></pre>
+
+<pre><code>ir1 = Sensor("IR1",0)
+ir1.trigger()
+if ir1.Triggered:
+    print("IR triggered")
+</code></pre>
+
+<h3>
+<a id="arrow" class="anchor" href="#arrow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Arrow</h3>
+
+<p>Class defining the arrow LEDs mounted on the Motor-Shield.</p>
+
+<p><em><strong>Constructor Arguments</strong></em></p>
+
+<p><strong>which</strong></p>
+
+<p>An integer (1 - 4) representing an LED arrow. The arrow number if arbitrary starting with:
+            1 = Arrow closest to the Motorshield's power pins and running clockwise round the board
+            ...
+            4 = Arrow closest to the motor pins.</p>
+
+<p><em><strong>Methods</strong></em></p>
+
+<p><strong>on()</strong></p>
+
+<p>Turns on the LED arrow</p>
+
+<p><strong>off()</strong></p>
+
+<p>Turns off the LED arrow</p>
+
+<p><strong>Example</strong></p>
+
+<pre><code>a1 = Arrow(1)
+a1.on()
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/sbcshop/motor-shield">Motor-shield</a> is maintained by <a href="https://github.com/sbcshop">sbcshop</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
 
   
   </body>
