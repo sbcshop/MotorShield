@@ -23,9 +23,9 @@ class Motor:
     config = int defining which pins control "forward" and "backward" movement.
     '''
     motorpins = {"MOTOR1":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
-                 "MOTOR2":{"config":{1:{"e":19,"f":21,"r":23},2:{"e":32,"f":23,"r":21}}, "arrow":2},
-                 "MOTOR3":{"config":{1:{"e":22,"f":16,"r":18},2:{"e":32,"f":18,"r":16}}, "arrow":3},
-                 "MOTOR4":{"config":{1:{"e":11,"f":15,"r":13},2:{"e":32,"f":13,"r":15}},"arrow":4}}
+                 "MOTOR2":{"config":{1:{"e":19,"f":21,"r":23},2:{"e":19,"f":23,"r":21}}, "arrow":2},
+                 "MOTOR3":{"config":{1:{"e":22,"f":16,"r":18},2:{"e":22,"f":18,"r":16}}, "arrow":3},
+                 "MOTOR4":{"config":{1:{"e":11,"f":15,"r":13},2:{"e":11,"f":13,"r":15}},"arrow":4}}
     
     def __init__(self, motor, config):
         self.testMode = False
