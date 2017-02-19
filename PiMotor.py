@@ -120,7 +120,7 @@ class Sensor:
             will return a Triggered response of True. 
     '''
     Triggered = False
-    def iRCheck():
+    def iRCheck(self):
         input_state = GPIO.input(self.config["echo"])
         if input_state == True:
             print("Sensor 2: Object Detected")
