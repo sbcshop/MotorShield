@@ -13,7 +13,9 @@ def run():
         for config in range(1,3):
             print(motor + " config: " + str(config))
             m = PiMotor.Motor(motor,config)
-            m.forward()
+            m.forward(50)
+            time.sleep(2)
+            m.reverse(50)
             time.sleep(2)
             m.stop()
 
