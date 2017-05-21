@@ -16,3 +16,6 @@ def run():
             m.forward()
             time.sleep(2)
             m.stop()
+
+if __name__ == '__main__':
+    run()
