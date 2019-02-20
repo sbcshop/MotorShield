@@ -19,6 +19,6 @@ Motor Drvier for Raspberry Pi to control DC and Stepper Motors
 
 
 
-# Changes:
+** Changes: **
 
 Added __Motor__, __LinkedMotor__, __Arrow__ and __Sensor__ classes. Allows user to specify what is "forward" and what is "reverse" without requiring re-wiring of the motors.
