@@ -2,7 +2,6 @@
 
 # Library for PiMotor Shield V2
 # Developed by: SB Components
-# Author: Ankur
 # Project: RPi Motor Shield
 
 import RPi.GPIO as GPIO                        #Import GPIO library
