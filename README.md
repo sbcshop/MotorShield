@@ -17,6 +17,7 @@ Motor Drvier for Raspberry Pi to control DC and Stepper Motors
 
 4. Run (Press F5) file 'Test_Motor.py'. This is the example code to run all the motors in 'Forward' and 'Backward' direction
 
+5. For interfacing Stepper Motor use example code 'Stepper_Test.py'
 
 
 **Changes:**
