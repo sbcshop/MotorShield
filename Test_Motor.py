@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import RPi.GPIO as GPIO                        #Import GPIO library
 import PiMotor
 import time
 
