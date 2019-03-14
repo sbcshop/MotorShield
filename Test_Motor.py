@@ -2,7 +2,7 @@
 
 import PiMotor
 import time
-
+import RPi.GPIO as GPIO
 
 #Name of Individual MOTORS 
 m1 = PiMotor.Motor("MOTOR1",1)
