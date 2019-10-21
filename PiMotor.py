@@ -38,6 +38,7 @@ class Motor:
         GPIO.output(self.pins['e'],GPIO.HIGH)
         GPIO.output(self.pins['f'],GPIO.LOW)
         GPIO.output(self.pins['r'],GPIO.LOW)
+        self.currentSpeed = 0
 
     def test(self, state):
         ''' Puts the motor into test mode
@@ -57,6 +58,9 @@ class Motor:
         0 - stop and 100 - maximum speed
         '''    
         print("Forward")
+        
+        self.currentSpeed = speed
+        
         if self.testMode:
             self.arrow.on()
         else:
@@ -72,6 +76,9 @@ class Motor:
         0 - stop and 100 - maximum speed
      '''
         print("Reverse")
+        
+        self.currentSpeed = speed * (-1)
+        
         if self.testMode:
             self.arrow.off()
         else:
@@ -87,6 +94,12 @@ class Motor:
         self.PWM.ChangeDutyCycle(0)
         GPIO.output(self.pins['f'],GPIO.LOW)
         GPIO.output(self.pins['r'],GPIO.LOW)
+        
+    def getSpeed(self):
+        ''' Returns current speed of the motor
+            positive numbers are forward, negative numbers are reverse '''
+            
+        return self.currentSpeed
 
     def speed(self):
         ''' Control Speed of Motor,
@@ -104,6 +117,7 @@ class LinkedMotors:
      '''
     def __init__(self, *motors):
         self.motor = []
+        self.currentSpeed = [0, 0, 0, 0]
         for i in motors:
             print(i.pins)
             self.motor.append(i)
@@ -115,7 +129,9 @@ class LinkedMotors:
         speed = Duty Cycle Percentage from 0 to 100.
         0 - stop and 100 - maximum speed 
      '''
+     
         for i in range(len(self.motor)):
+            self.currentSpeed[i] = speed
             self.motor[i].forward(speed)
 
     def reverse(self,speed):
@@ -125,8 +141,16 @@ class LinkedMotors:
         speed = Duty Cycle Percentage from 0 to 100.
         0 - stop and 100 - maximum speed
      '''
+        
         for i in range(len(self.motor)):
+            self.currentSpeed[i] = speed
             self.motor[i].reverse(speed)
+    
+    def getSpeed(self)
+        ''' Returns array with current speed of the motors
+            positive numbers are forward, negative numbers are reverse '''
+            
+        return self.currentSpeed
 
     def stop(self):
         ''' Stops power to the motor,
@@ -237,7 +261,7 @@ class Sensor:
             self.Triggered = False
 
     def sonicCheck(self):
-        print("SonicCheck has been triggered")
+        # print("SonicCheck has been triggered")
         time.sleep(0.333)
         GPIO.output(self.config["trigger"], True)
         time.sleep(0.00001)
@@ -253,7 +277,7 @@ class Sensor:
         if self.boundary > measure:
             print("Boundary breached")
             print(self.boundary)
-            print(measure)
+            print(measure / 2.54)
             self.Triggered = True
         else:
             self.Triggered = False
@@ -267,7 +291,7 @@ class Sensor:
         If the specified "boundary" has been breached the Sensor's Triggered attribute gets set to True.
     ''' 
         self.config["check"](self)
-        print("Trigger Called")
+        # print("Trigger Called")
 
     def __init__(self, sensortype, boundary):
         self.config = self.sensorpins[sensortype]
