@@ -146,7 +146,7 @@ class LinkedMotors:
             self.currentSpeed[i] = speed
             self.motor[i].reverse(speed)
     
-    def getSpeed(self)
+    def getSpeed(self):
         ''' Returns array with current speed of the motors
             positive numbers are forward, negative numbers are reverse '''
             
