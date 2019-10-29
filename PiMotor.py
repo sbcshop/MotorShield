@@ -317,9 +317,15 @@ class Arrow():
         self.pin = self.arrowpins[which]
         GPIO.setup(self.pin,GPIO.OUT)
         GPIO.output(self.pin, GPIO.LOW)
+        self.isOn = False
 
     def on(self):
         GPIO.output(self.pin,GPIO.HIGH)
+        self.isOn = True
 
     def off(self):
         GPIO.output(self.pin,GPIO.LOW)
+        self.isOn = False
+        
+    def getStatus(self):
+        return self.isOn
