@@ -20,6 +20,10 @@ Motor Drvier for Raspberry Pi to control DC and Stepper Motors
 5. For interfacing Stepper Motor use example code 'Stepper_Test.py'
 
 
+
+## PiRlay GUI
+![PiRelay GUI]("https://github.com/sbcshop/MotorShield/PiRelay_GUI")
+
 **Changes:**
 
 Added __Motor__, __LinkedMotor__, __Arrow__ and __Sensor__ classes. Allows user to specify what is "forward" and what is "reverse" without requiring re-wiring of the motors.
