@@ -22,7 +22,7 @@ Motor Drvier for Raspberry Pi to control DC and Stepper Motors
 
 
 ## PiRlay GUI
-![PiRelay GUI]("https://github.com/sbcshop/MotorShield/Images/PiRelay_GUI.png")
+![PiRelay GUI]("https://github.com/sbcshop/MotorShield/Images/PiRelay_GUI.PNG")
 
 **Changes:**
 
