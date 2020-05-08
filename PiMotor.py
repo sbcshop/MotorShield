@@ -162,6 +162,13 @@ class Stepper:
         GPIO.output(self.config["c3"],GPIO.LOW)
         GPIO.output(self.config["c4"],GPIO.LOW)
 
+        self.sequence = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ]
+
     ''' Set steps of Stepper Motor
     
         Arguments:
@@ -181,14 +188,10 @@ class Stepper:
     '''
     def forward(self, delay, steps):
         for i in range(0, steps):
-            self.setStep(1, 0, 0, 0)
-            time.sleep(delay)
-            self.setStep(0, 1, 0, 0)
-            time.sleep(delay)
-            self.setStep(0, 0, 1, 0)
-            time.sleep(delay)
-            self.setStep(0, 0, 0, 1)
-            time.sleep(delay)
+            for cycle in self.sequence:
+                w1, w2, w3, w4 = cycle
+                self.setStep(w1, w2, w3, w4)
+                time.sleep(delay)
 
     ''' Rotate Stepper motor in backward direction
     
@@ -198,14 +201,13 @@ class Stepper:
     '''
     def backward(self, delay, steps):
         for i in range(0, steps):
-            self.setStep(0, 0, 0, 1)
-            time.sleep(delay)
-            self.setStep(0, 0, 1, 0)
-            time.sleep(delay)
-            self.setStep(0, 1, 0, 0)
-            time.sleep(delay)
-            self.setStep(1, 0, 0, 0)
-            time.sleep(delay)
+            for cycle in reversed(self.sequence):
+                w1, w2, w3, w4 = cycle
+                self.setStep(w1, w2, w3, w4)
+                time.sleep(delay)
+
+    def setSequence(self, sequence):
+        self.sequence = sequence
 
     def stop(self):
         ''' Stops power to the motor,
