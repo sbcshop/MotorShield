@@ -4,6 +4,8 @@ import RPi.GPIO as GPIO
 
 # This is for Longruner 5X Geared Stepper Motor
 # 28byj 48 Uln2003 5v Stepper Motor Uln2003 Driver Board
+# This url contains how to connect your motors right and much more: 
+#	http://www.4tronix.co.uk/arduino/Stepper-Motors.php
 
 m1 = PiMotor.Stepper("STEPPER1")
 m1.setSequence([
