@@ -2,7 +2,8 @@
 
 Motor Driver for Raspberry Pi to control DC and Stepper Motors
 
-<img src="https://cdn.shopify.com/s/files/1/1217/2104/products/motor_shield_a_720_660_1024x1024.png?v=1528533987" width="300">
+<img src="https://cdn.shopify.com/s/files/1/1217/2104/products/3_1_481fe438-49c9-45f4-805c-ea60c02055d2_130x.png?v=1611396591" width="300">
+
 
 **Steps for Motor Shield software installation -** 
 
