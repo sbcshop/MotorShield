@@ -7,9 +7,10 @@
 import RPi.GPIO as GPIO                        #Import GPIO library
 import time
 from time import sleep
-GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
+#GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
+#GPIO.setmode(GPIO.BCM) 
 
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 
 class Motor:
     ''' Class to handle interaction with the motor pins
@@ -21,10 +22,15 @@ class Motor:
             the motor is connected.
     config = int defining which pins control "forward" and "backward" movement.
     '''
-    motorpins = {"MOTOR4":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
+    motorpins_board = {"MOTOR4":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
                  "MOTOR3":{"config":{1:{"e":19,"f":21,"r":23},2:{"e":19,"f":23,"r":21}}, "arrow":2},
                  "MOTOR2":{"config":{1:{"e":22,"f":16,"r":18},2:{"e":22,"f":18,"r":16}}, "arrow":3},
                  "MOTOR1":{"config":{1:{"e":11,"f":15,"r":13},2:{"e":11,"f":13,"r":15}},"arrow":4}}
+    
+    motorpins = {"MOTOR4":{"config":{1:{"e":12,"f":8,"r":7},2:{"e":12,"f":7,"r":8}},"arrow":1},
+                 "MOTOR3":{"config":{1:{"e":10,"f":9,"r":11},2:{"e":10,"f":11,"r":9}}, "arrow":2},
+                 "MOTOR2":{"config":{1:{"e":25,"f":23,"r":24},2:{"e":25,"f":24,"r":23}}, "arrow":3},
+                 "MOTOR1":{"config":{1:{"e":17,"f":22,"r":27},2:{"e":17,"f":27,"r":22}},"arrow":4}}
     
     def __init__(self, motor, config):
         self.testMode = False
@@ -162,13 +168,6 @@ class Stepper:
         GPIO.output(self.config["c3"],GPIO.LOW)
         GPIO.output(self.config["c4"],GPIO.LOW)
 
-        self.sequence = [
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ]
-
     ''' Set steps of Stepper Motor
     
         Arguments:
@@ -188,10 +187,14 @@ class Stepper:
     '''
     def forward(self, delay, steps):
         for i in range(0, steps):
-            for cycle in self.sequence:
-                w1, w2, w3, w4 = cycle
-                self.setStep(w1, w2, w3, w4)
-                time.sleep(delay)
+            self.setStep(1, 0, 0, 0)
+            time.sleep(delay)
+            self.setStep(0, 1, 0, 0)
+            time.sleep(delay)
+            self.setStep(0, 0, 1, 0)
+            time.sleep(delay)
+            self.setStep(0, 0, 0, 1)
+            time.sleep(delay)
 
     ''' Rotate Stepper motor in backward direction
     
@@ -201,13 +204,14 @@ class Stepper:
     '''
     def backward(self, delay, steps):
         for i in range(0, steps):
-            for cycle in reversed(self.sequence):
-                w1, w2, w3, w4 = cycle
-                self.setStep(w1, w2, w3, w4)
-                time.sleep(delay)
-
-    def setSequence(self, sequence):
-        self.sequence = sequence
+            self.setStep(0, 0, 0, 1)
+            time.sleep(delay)
+            self.setStep(0, 0, 1, 0)
+            time.sleep(delay)
+            self.setStep(0, 1, 0, 0)
+            time.sleep(delay)
+            self.setStep(1, 0, 0, 0)
+            time.sleep(delay)
 
     def stop(self):
         ''' Stops power to the motor,
@@ -289,7 +293,9 @@ class Arrow():
             ...
             4 = Arrow closest to the motor pins.
     '''
-    arrowpins={1:33,2:35,3:37,4:36}
+    arrowpins_board={1:33,2:35,3:37,4:36}
+    
+    arrowpins={1:13,2:19,3:26,4:16}
 
     def __init__(self, which):
         self.pin = self.arrowpins[which]
