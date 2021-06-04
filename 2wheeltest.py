@@ -6,6 +6,7 @@ import threading
 import datetime
 import RPi.GPIO as GPIO
 from math import *
+#from ultrasonic_thread import ultra
 
 import adafruit_bno055
 import board
@@ -102,6 +103,7 @@ def turn_by_angle(direction, angle, speed=40, m1=m1, m2=m2):
     print(euler)
     return sensor
 
+
 try:
     while True:
         thing_2_do = input("f, b, l, r: ")
@@ -128,4 +130,23 @@ except Exception as e:
 finally:
     m1.stop()
     m2.stop()
+    ultra.stop()
     GPIO.cleanup()
+
+'''
+
+ultra = ultra()
+ultra.start()
+new_sensor, thread = go_straight(50)
+try:
+	while True:
+		if ultra.get_dist() < 2:
+			print("Move Away")
+except Exception as e:
+	print("FAILURE:", e)
+finally:
+    m1.stop()
+    m2.stop()
+    ultra.stop()
+    GPIO.cleanup()
+'''
