@@ -6,10 +6,16 @@ import threading
 import datetime
 import RPi.GPIO as GPIO
 from math import *
-#from ultrasonic_thread import ultra
+from ultrasonic_thread import ultra
 
 import adafruit_bno055
 import board
+
+ir1 = 1
+ir2 = 14
+
+GPIO.setup(ir1,GPIO.IN)
+GPIO.setup(ir2,GPIO.IN)
 
 i2c = board.I2C()
 sensor = adafruit_bno055.BNO055_I2C(i2c)
@@ -24,6 +30,7 @@ print(sensor.gravity)
 
 m1 = PiMotor.Motor("MOTOR1",2) # Left Wheel: Reverse is forward
 m2 = PiMotor.Motor("MOTOR2",1) # Right Wheel: forward is forward
+
 
 class straightThread(threading.Thread):
     def __init__(self, sensor, left_wheels, right_wheels, speed, threshold):
@@ -45,7 +52,7 @@ class straightThread(threading.Thread):
         return None
     
     def run(self):
-        print("Angles before move:", self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0])
+        #print("Angles before move:", self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0], self.sensor.euler[0])
         num_times_corrected= 0
         self.left_wheels.forward(self.speed-10)
         self.right_wheels.forward(self.speed)
@@ -57,8 +64,8 @@ class straightThread(threading.Thread):
                     self.left_wheels.forward(self.speed-round(x/2.5))
                     self.right_wheels.forward(self.speed+round(x/2.5))
             time.sleep(0.1)
-        print("Angle after move:", self.sensor.euler[0])
-        print("Times Corrected:", num_times_corrected)
+        #print("Angle after move:", self.sensor.euler[0])
+        #print("Times Corrected:", num_times_corrected)
     
     def stop(self):
         self.turn_stop = True
@@ -67,7 +74,7 @@ class straightThread(threading.Thread):
         self.right_wheels.stop()
         print(self.get_angle())
 
-def go_straight(speed, left_wheels=m1, right_wheels=m2, threshold=10):
+def go_straight(speed, left_wheels=m1, right_wheels=m2, threshold=5):
     sensor = adafruit_bno055.BNO055_I2C(i2c)
     straight_thread = straightThread(sensor, left_wheels, right_wheels, speed, threshold)
     straight_thread.start()
@@ -103,7 +110,7 @@ def turn_by_angle(direction, angle, speed=40, m1=m1, m2=m2):
     print(euler)
     return sensor
 
-
+'''
 try:
     while True:
         thing_2_do = input("f, b, l, r: ")
@@ -130,23 +137,35 @@ except Exception as e:
 finally:
     m1.stop()
     m2.stop()
-    ultra.stop()
     GPIO.cleanup()
 
 '''
 
+def turn_till_clear(ir1=ir1, ir2=ir2, ultra=ultra, speed=40, m1=m1, m2=m2):
+	m1.forward(speed-10)
+	m2.reverse(speed)
+	while GPIO.input(ir1) == 0 or GPIO.input(ir2) == 0 or ultra.get_dist() < 5:
+		time.sleep(0.01)
+	m1.stop()
+	m2.stop()
+
 ultra = ultra()
 ultra.start()
-new_sensor, thread = go_straight(50)
+new_sensor, thread = go_straight(40)
 try:
 	while True:
-		if ultra.get_dist() < 2:
+		if GPIO.input(ir1) == 0 or GPIO.input(ir2) == 0 or ultra.get_dist() < 5:
 			print("Move Away")
+			thread.stop()
+			turn_till_clear(ultra = ultra)
+			new_sensor, thread = go_straight(40)
+			print("Done Moving")
 except Exception as e:
 	print("FAILURE:", e)
 finally:
     m1.stop()
     m2.stop()
     ultra.stop()
+    thread.stop()
     GPIO.cleanup()
-'''
+
