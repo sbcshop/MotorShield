@@ -264,8 +264,11 @@ class Sensor:
         else:
             self.Triggered = False
         
-    sensorpins = {"IR1":{"echo":7, "check":iRCheck}, "IR2":{"echo":12, "check":iRCheck},
+    board_sensorpins = {"IR1":{"echo":7, "check":iRCheck}, "IR2":{"echo":12, "check":iRCheck},
                   "ULTRASONIC":{"trigger":29, "echo": 31, "check":sonicCheck}}
+    
+    sensorpins = {"IR1":{"echo":4, "check":iRCheck}, "IR2":{"echo":18, "check":iRCheck},
+                  "ULTRASONIC":{"trigger":5, "echo": 6, "check":sonicCheck}}
 
     def trigger(self):
         ''' Executes the relevant routine that activates and takes a reading from the specified sensor.
