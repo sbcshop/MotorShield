@@ -1,5 +1,6 @@
 # Motor-Shield
 
+The Motorshield is designed to help you get your Raspberry Pi-based Robot. This board can control the DC motor as well as the stepper motor. You can connect your IR and Ultrasonic sensors to tell your robot about its environment. You can easily make your Line Following, Object following, Wall following, and Maze-Solver Robots.
 Motor Driver for Raspberry Pi to control DC and Stepper Motors
 
 <img src="https://cdn.shopify.com/s/files/1/1217/2104/products/3_1_481fe438-49c9-45f4-805c-ea60c02055d2_700x.png?v=1611396591" width="300">
