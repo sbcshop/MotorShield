@@ -4,6 +4,10 @@ import PiMotor
 import time
 import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BCM) 
+
+GPIO.setwarnings(False)
+
 #Name of Individual MOTORS 
 m1 = PiMotor.Motor("MOTOR1",1)
 m2 = PiMotor.Motor("MOTOR2",1)
