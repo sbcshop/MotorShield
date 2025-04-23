@@ -320,3 +320,5 @@ tkinter.Radiobutton(frame, highlightthickness=0, text="Backward",
                     variable=var4, value=2).place(x=547, y=445)
 w4 = tkinter.Spinbox(width=5, values=(100, 90, 80, 70, 60, 50, 40, 30, 20, 10))
 w4.place(x=565, y=480)
+
+window.mainloop()
