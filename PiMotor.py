@@ -7,9 +7,10 @@
 import RPi.GPIO as GPIO                        #Import GPIO library
 import time
 from time import sleep
-GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
+#GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
+#GPIO.setmode(GPIO.BCM) 
 
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 
 class Motor:
     ''' Class to handle interaction with the motor pins
@@ -21,10 +22,15 @@ class Motor:
             the motor is connected.
     config = int defining which pins control "forward" and "backward" movement.
     '''
-    motorpins = {"MOTOR4":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
+    motorpins_board = {"MOTOR4":{"config":{1:{"e":32,"f":24,"r":26},2:{"e":32,"f":26,"r":24}},"arrow":1},
                  "MOTOR3":{"config":{1:{"e":19,"f":21,"r":23},2:{"e":19,"f":23,"r":21}}, "arrow":2},
                  "MOTOR2":{"config":{1:{"e":22,"f":16,"r":18},2:{"e":22,"f":18,"r":16}}, "arrow":3},
                  "MOTOR1":{"config":{1:{"e":11,"f":15,"r":13},2:{"e":11,"f":13,"r":15}},"arrow":4}}
+    
+    motorpins = {"MOTOR4":{"config":{1:{"e":12,"f":8,"r":7},2:{"e":12,"f":7,"r":8}},"arrow":1},
+                 "MOTOR3":{"config":{1:{"e":10,"f":9,"r":11},2:{"e":10,"f":11,"r":9}}, "arrow":2},
+                 "MOTOR2":{"config":{1:{"e":25,"f":23,"r":24},2:{"e":25,"f":24,"r":23}}, "arrow":3},
+                 "MOTOR1":{"config":{1:{"e":17,"f":22,"r":27},2:{"e":17,"f":27,"r":22}},"arrow":4}}
     
     def __init__(self, motor, config):
         self.testMode = False
@@ -258,8 +264,11 @@ class Sensor:
         else:
             self.Triggered = False
         
-    sensorpins = {"IR1":{"echo":7, "check":iRCheck}, "IR2":{"echo":12, "check":iRCheck},
+    board_sensorpins = {"IR1":{"echo":7, "check":iRCheck}, "IR2":{"echo":12, "check":iRCheck},
                   "ULTRASONIC":{"trigger":29, "echo": 31, "check":sonicCheck}}
+    
+    sensorpins = {"IR1":{"echo":4, "check":iRCheck}, "IR2":{"echo":18, "check":iRCheck},
+                  "ULTRASONIC":{"trigger":5, "echo": 6, "check":sonicCheck}}
 
     def trigger(self):
         ''' Executes the relevant routine that activates and takes a reading from the specified sensor.
@@ -287,7 +296,9 @@ class Arrow():
             ...
             4 = Arrow closest to the motor pins.
     '''
-    arrowpins={1:33,2:35,3:37,4:36}
+    arrowpins_board={1:33,2:35,3:37,4:36}
+    
+    arrowpins={1:13,2:19,3:26,4:16}
 
     def __init__(self, which):
         self.pin = self.arrowpins[which]
